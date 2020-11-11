@@ -11,10 +11,9 @@ namespace Pillsgood.Extensions.Logging
     {
         private const string LogLevelPadding = ": ";
 
-        private static readonly string _messagePadding =
-            new string(' ', GetLogLevelString(LogLevel.Information).Length + LogLevelPadding.Length);
+        private readonly string _messagePadding;
+        private readonly string _newLineWithMessagePadding;
 
-        private static readonly string _newLineWithMessagePadding = Environment.NewLine + _messagePadding;
         private IDisposable _optionsReloadToken;
 
         internal DefaultConsoleFormatterOptions FormatterOptions { get; set; }
@@ -23,8 +22,10 @@ namespace Pillsgood.Extensions.Logging
         {
             ReloadLoggerOptions(options.CurrentValue);
             _optionsReloadToken = options.OnChange(ReloadLoggerOptions);
+            _messagePadding = new string(' ', GetLogLevelString(LogLevel.Information).Length + LogLevelPadding.Length);
+            _newLineWithMessagePadding = Environment.NewLine + _messagePadding;
         }
-
+        
         private void ReloadLoggerOptions(DefaultConsoleFormatterOptions options)
         {
             FormatterOptions = options;
@@ -123,18 +124,14 @@ namespace Pillsgood.Extensions.Logging
         private DateTimeOffset GetCurrentDateTime() =>
             FormatterOptions.UseUtcTimestamp ? DateTimeOffset.UtcNow : DateTimeOffset.Now;
 
-        private static string GetLogLevelString(LogLevel logLevel)
+        private string GetLogLevelString(LogLevel logLevel)
         {
-            return logLevel switch
+            if (FormatterOptions.LogLevelOptions.Map.TryGetValue(logLevel, out var option))
             {
-                LogLevel.Trace => "trce",
-                LogLevel.Debug => "dbug",
-                LogLevel.Information => "info",
-                LogLevel.Warning => "warn",
-                LogLevel.Error => "fail",
-                LogLevel.Critical => "crit",
-                _ => throw new ArgumentOutOfRangeException(nameof(logLevel))
-            };
+                return option.Name;
+            }
+
+            throw new ArgumentNullException(nameof(logLevel));
         }
 
         private ConsoleColors GetLogLevelConsoleColors(LogLevel logLevel)
@@ -144,19 +141,12 @@ namespace Pillsgood.Extensions.Logging
                                 Console.IsOutputRedirected;
             if (disableColors)
             {
-                return new ConsoleColors(null, null);
+                return new ConsoleColors();
             }
 
-            return logLevel switch
-            {
-                LogLevel.Trace => new ConsoleColors(Color.Gray),
-                LogLevel.Debug => new ConsoleColors(Color.Gray),
-                LogLevel.Information => new ConsoleColors(Color.Green),
-                LogLevel.Warning => new ConsoleColors(Color.Yellow),
-                LogLevel.Error => new ConsoleColors(Color.Black, Color.Red),
-                LogLevel.Critical => new ConsoleColors(Color.White, Color.Red),
-                _ => new ConsoleColors(null, null)
-            };
+            return FormatterOptions.LogLevelOptions.Map.TryGetValue(logLevel, out var option)
+                ? new ConsoleColors(option.Foreground, option.Background)
+                : new ConsoleColors();
         }
 
         private void WriteScopeInformation(TextWriter textWriter, IExternalScopeProvider scopeProvider,

@@ -9,31 +9,31 @@ using Microsoft.Extensions.Options;
 namespace Pillsgood.Extensions.Logging
 {
     [ProviderAlias("Console")]
-    public class ConsoleLoggerProvider : ILoggerProvider, ISupportExternalScope
+    public class Ansi24BitConsoleLoggerProvider : ILoggerProvider, ISupportExternalScope
     {
         private readonly IOptionsMonitor<ConsoleLoggerOptions> _options;
-        private readonly ConcurrentDictionary<string, ConsoleLogger> _loggers;
+        private readonly ConcurrentDictionary<string, Ansi24BitConsoleLogger> _loggers;
         private ConcurrentDictionary<string, IConsoleFormatter> _formatters;
-        private readonly ConsoleLoggerProcessor _messageQueue;
+        private readonly Ansi24BitConsoleLoggerProcessor _messageQueue;
 
         private IDisposable _optionsReloadToken;
         private IExternalScopeProvider _scopeProvider = NullExternalScopeProvider.Instance;
 
-        public ConsoleLoggerProvider(IOptionsMonitor<ConsoleLoggerOptions> options) : this(options,
+        public Ansi24BitConsoleLoggerProvider(IOptionsMonitor<ConsoleLoggerOptions> options) : this(options,
             Enumerable.Empty<IConsoleFormatter>())
         {
         }
 
 
-        public ConsoleLoggerProvider(IOptionsMonitor<ConsoleLoggerOptions> options,
+        public Ansi24BitConsoleLoggerProvider(IOptionsMonitor<ConsoleLoggerOptions> options,
             IEnumerable<IConsoleFormatter> formatters)
         {
             _options = options;
-            _loggers = new ConcurrentDictionary<string, ConsoleLogger>();
+            _loggers = new ConcurrentDictionary<string, Ansi24BitConsoleLogger>();
             SetFormatters(formatters);
             ReloadLoggerOptions(options.CurrentValue);
             _optionsReloadToken = _options.OnChange(ReloadLoggerOptions);
-            _messageQueue = new ConsoleLoggerProcessor();
+            _messageQueue = new Ansi24BitConsoleLoggerProcessor();
             if (DoesConsoleSupportAnsi())
             {
                 _messageQueue.Console = new AnsiLogConsole();
@@ -112,7 +112,7 @@ namespace Pillsgood.Extensions.Logging
                 throw new ArgumentNullException(nameof(_options.CurrentValue.FormatterName));
             }
 
-            return _loggers.GetOrAdd(name, loggerName => new ConsoleLogger(name, _messageQueue)
+            return _loggers.GetOrAdd(name, loggerName => new Ansi24BitConsoleLogger(name, _messageQueue)
             {
                 Options = _options.CurrentValue,
                 ScopeProvider = _scopeProvider,

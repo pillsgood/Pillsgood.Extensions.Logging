@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace Pillsgood.Extensions.Logging
 {
-    internal class ConsoleLoggerProcessor : IDisposable
+    internal class Ansi24BitConsoleLoggerProcessor : IDisposable
     {
         private const int _maxQueuedMessages = 1024;
 
@@ -14,7 +14,7 @@ namespace Pillsgood.Extensions.Logging
         public IConsole Console;
         public IConsole ErrorConsole;
 
-        public ConsoleLoggerProcessor()
+        public Ansi24BitConsoleLoggerProcessor()
         {
             _outputThread = new Thread(ProcessLogQueue)
             {
