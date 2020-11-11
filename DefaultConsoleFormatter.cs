@@ -25,7 +25,7 @@ namespace Pillsgood.Extensions.Logging
             _messagePadding = new string(' ', GetLogLevelString(LogLevel.Information).Length + LogLevelPadding.Length);
             _newLineWithMessagePadding = Environment.NewLine + _messagePadding;
         }
-        
+
         private void ReloadLoggerOptions(DefaultConsoleFormatterOptions options)
         {
             FormatterOptions = options;
@@ -70,14 +70,19 @@ namespace Pillsgood.Extensions.Logging
             CreateDefaultLogMessage(textWriter, logEntry, message, scopeProvider);
         }
 
-        private void CreateDefaultLogMessage<TState>(TextWriter textWriter, in LogEntry<TState> logEntry,
+        private void CreateDefaultLogMessage<TState>(TextWriter textWriter, LogEntry<TState> logEntry,
             string message, IExternalScopeProvider scopeProvider)
         {
             var singleLine = FormatterOptions.Singleline;
             var eventId = logEntry.EventId.Id;
             var exception = logEntry.Exception;
 
-            textWriter.Write($"{LogLevelPadding}{logEntry.Category}[{eventId}]");
+            textWriter.Write(AnsiString.Build(s => s
+                .Append(LogLevelPadding)
+                .Append(logEntry.Category).Color(FormatterOptions.CategoryColor)
+                .Append('[').Append(eventId).Append(']'))
+            );
+
             if (!singleLine)
             {
                 textWriter.Write(Environment.NewLine);

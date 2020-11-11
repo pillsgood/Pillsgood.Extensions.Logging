@@ -10,6 +10,7 @@ namespace Pillsgood.Extensions.Logging
         public bool Singleline { get; set; }
         internal LogLevelOptions LogLevelOptions { get; set; } = new LogLevelOptions();
 
+        public Color? CategoryColor { get; set; } = Color.Cyan;
         public void ConfigureLogLevel(Action<LogLevelConfiguration> configure)
         {
             configure(new LogLevelConfiguration(LogLevelOptions));

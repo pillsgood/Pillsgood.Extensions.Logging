@@ -56,29 +56,28 @@ namespace Pillsgood.Extensions.Logging
                     LogLevel.Debug, new LogLevelOption
                     {
                         Name = "dbug",
-                        Foreground = Color.Gray
+                        Foreground = Color.Magenta
                     }
                 },
                 {
                     LogLevel.Information, new LogLevelOption
                     {
                         Name = "info",
-                        Foreground = Color.Green
+                        Foreground = Color.Lime
                     }
                 },
                 {
                     LogLevel.Warning, new LogLevelOption
                     {
                         Name = "warn",
-                        Foreground = Color.Yellow
+                        Foreground = Color.Orange
                     }
                 },
                 {
                     LogLevel.Error, new LogLevelOption
                     {
                         Name = "fail",
-                        Foreground = Color.Black,
-                        Background = Color.Red
+                        Foreground = Color.Red,
                     }
                 },
                 {

@@ -34,8 +34,8 @@ namespace Pillsgood.Extensions.Logging
         }
 
         public static void WriteColoredMessage(this TextWriter textWriter, string message,
-            Color? foreground,
-            Color? background)
+            Color? foreground = null,
+            Color? background = null)
         {
             if (background.HasValue) textWriter.Write(GetBackgroundColorEscapeCode(background.Value));
 

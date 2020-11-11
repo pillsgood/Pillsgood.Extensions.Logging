@@ -17,7 +17,7 @@ namespace Pillsgood.Extensions.Logging
         {
             get
             {
-                for (var i = 0; i < _messageQueue.Count; i++)
+                while (_messageQueue.Count > 0)
                 {
                     _messageQueue.Dequeue().Invoke(_stringBuilder);
                 }
