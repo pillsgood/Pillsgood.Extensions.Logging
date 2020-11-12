@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
@@ -9,9 +10,9 @@ using Microsoft.Extensions.Options;
 namespace Pillsgood.Extensions.Logging
 {
     [ProviderAlias("Console")]
-    public class Ansi24BitConsoleLoggerProvider : ILoggerProvider, ISupportExternalScope
+    internal class Ansi24BitConsoleLoggerProvider : ILoggerProvider, ISupportExternalScope
     {
-        private readonly IOptionsMonitor<ConsoleLoggerOptions> _options;
+        private readonly IOptionsMonitor<Ansi24BitConsoleLoggerOptions> _options;
         private readonly ConcurrentDictionary<string, Ansi24BitConsoleLogger> _loggers;
         private ConcurrentDictionary<string, IConsoleFormatter> _formatters;
         private readonly Ansi24BitConsoleLoggerProcessor _messageQueue;
@@ -19,13 +20,13 @@ namespace Pillsgood.Extensions.Logging
         private IDisposable _optionsReloadToken;
         private IExternalScopeProvider _scopeProvider = NullExternalScopeProvider.Instance;
 
-        public Ansi24BitConsoleLoggerProvider(IOptionsMonitor<ConsoleLoggerOptions> options) : this(options,
+        public Ansi24BitConsoleLoggerProvider(IOptionsMonitor<Ansi24BitConsoleLoggerOptions> options) : this(options,
             Enumerable.Empty<IConsoleFormatter>())
         {
         }
 
 
-        public Ansi24BitConsoleLoggerProvider(IOptionsMonitor<ConsoleLoggerOptions> options,
+        public Ansi24BitConsoleLoggerProvider(IOptionsMonitor<Ansi24BitConsoleLoggerOptions> options,
             IEnumerable<IConsoleFormatter> formatters)
         {
             _options = options;
@@ -34,14 +35,16 @@ namespace Pillsgood.Extensions.Logging
             ReloadLoggerOptions(options.CurrentValue);
             _optionsReloadToken = _options.OnChange(ReloadLoggerOptions);
             _messageQueue = new Ansi24BitConsoleLoggerProcessor();
-            if (DoesConsoleSupportAnsi())
+            if (!Is4BitColorMode() && DoesConsoleSupportAnsi())
             {
                 _messageQueue.Console = new AnsiLogConsole();
                 _messageQueue.ErrorConsole = new AnsiLogConsole(true);
             }
             else
             {
-                throw new NotImplementedException("AnsiParsingLogConsole");
+                Console.WriteLine("ONLY 4 BIT");
+                _messageQueue.Console = new AnsiParsingLogConsole();
+                _messageQueue.ErrorConsole = new AnsiParsingLogConsole(true);
             }
         }
 
@@ -69,6 +72,28 @@ namespace Pillsgood.Extensions.Logging
                    Interop.Kernel32.ENABLE_VIRTUAL_TERMINAL_PROCESSING;
         }
 
+        private bool Is4BitColorMode()
+        {
+            if (_options.CurrentValue.Force4BitColor)
+            {
+                return true;
+            }
+
+            var process = Process.GetCurrentProcess();
+            while (process != null)
+            {
+                if (_options.CurrentValue.UnsupportedProcesses.Contains(process.ProcessName,
+                    StringComparer.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+
+                process = process.Parent();
+            }
+
+            return false;
+        }
+
         private void SetFormatters(IEnumerable<IConsoleFormatter> formatters = null)
         {
             _formatters = new ConcurrentDictionary<string, IConsoleFormatter>(StringComparer.OrdinalIgnoreCase);
@@ -90,17 +115,18 @@ namespace Pillsgood.Extensions.Logging
             }
         }
 
-        private void ReloadLoggerOptions(ConsoleLoggerOptions options)
+        private void ReloadLoggerOptions(Ansi24BitConsoleLoggerOptions options)
         {
             if (options.FormatterName == null || !_formatters.TryGetValue(options.FormatterName, out var logFormatter))
             {
                 throw new ArgumentNullException(nameof(options.FormatterName));
             }
 
-            foreach (var logger in _loggers)
+
+            foreach (var (_, value) in _loggers)
             {
-                logger.Value.Options = options;
-                logger.Value.Formatter = logFormatter;
+                value.Options = options;
+                value.Formatter = logFormatter;
             }
         }
 

@@ -18,12 +18,12 @@ namespace Pillsgood.Extensions.Logging
 
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, Ansi24BitConsoleLoggerProvider>());
             LoggerProviderOptions
-                .RegisterProviderOptions<ConsoleLoggerOptions, Ansi24BitConsoleLoggerProvider>(builder.Services);
+                .RegisterProviderOptions<Ansi24BitConsoleLoggerOptions, Ansi24BitConsoleLoggerProvider>(builder.Services);
 
             return builder;
         }
 
-        public static ILoggingBuilder AddAnsi24BitConsole(this ILoggingBuilder builder, Action<ConsoleLoggerOptions> configure)
+        public static ILoggingBuilder AddAnsi24BitConsole(this ILoggingBuilder builder, Action<Ansi24BitConsoleLoggerOptions> configure)
         {
             if (configure == null)
             {

@@ -19,7 +19,7 @@ namespace Pillsgood.Extensions.Logging
 
         internal IConsoleFormatter Formatter { get; set; }
         internal IExternalScopeProvider ScopeProvider { get; set; }
-        internal ConsoleLoggerOptions Options { get; set; }
+        internal Ansi24BitConsoleLoggerOptions Options { get; set; }
 
         [ThreadStatic] private static StringWriter _stringWriter;
 

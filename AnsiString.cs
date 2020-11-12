@@ -281,6 +281,17 @@ namespace Pillsgood.Extensions.Logging
             _stringBuilder.WriteColoredMessage(_messageQueue.Dequeue(), foreground, background);
             return this;
         }
+        
+        public AnsiString Color(ConsoleColor? foreground = null, ConsoleColor? background = null)
+        {
+            for (var i = 1; i < _messageQueue.Count; i++)
+            {
+                _messageQueue.Dequeue().Invoke(_stringBuilder);
+            }
+
+            _stringBuilder.WriteColoredMessage(_messageQueue.Dequeue(), foreground, background);
+            return this;
+        }
 
         public static string Build(Action<AnsiString> builder)
         {

@@ -1,14 +1,35 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using System.Text;
 
-internal partial class Interop
+[SuppressMessage("ReSharper", "InconsistentNaming")]
+public partial class Interop
 {
-    internal partial class Libaries
+    private class Libaries
     {
         internal const string Kernel32 = "kernel32.dll";
+        internal const string NtDll = "ntdll.dll";
     }
 
-    internal partial class Kernel32
+    internal class NtDll
+    {
+        internal struct PROCESS_BASIC_INFORMATION
+        {
+            internal IntPtr Reserved1;
+            internal IntPtr PebBaseAddress;
+            internal IntPtr Reserved2_0;
+            internal IntPtr Reserved2_1;
+            internal IntPtr UniqueProcessId;
+            internal IntPtr InheritedFromUniqueProcessId;
+        }
+
+        [DllImport(Libaries.NtDll)]
+        internal static extern int NtQueryInformationProcess(IntPtr processHandle, int processInformationClass,
+            ref PROCESS_BASIC_INFORMATION processInformation, int processInformationLength, out int returnLength);
+    }
+
+    internal class Kernel32
     {
         [DllImport(Libaries.Kernel32, SetLastError = true)]
         internal static extern bool GetConsoleMode(IntPtr handle, out uint mode);

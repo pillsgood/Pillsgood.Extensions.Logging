@@ -5,6 +5,7 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Authors>Pillsgood</Authors>
+        <LangVersion>preview</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
