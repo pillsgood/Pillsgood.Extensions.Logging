@@ -101,7 +101,7 @@ namespace Pillsgood.Extensions.Logging
                 var r = int.Parse(span[(i + 7)..(i + 10)]);
                 var g = int.Parse(span[(i + 11)..(i + 14)]);
                 var b = int.Parse(span[(i + 15)..(i + 18)]);
-                color = ColorUtilities.GetFallbackConsoleColor(Color.FromArgb(r, g, b));
+                color = Color.FromArgb(r, g, b).GetFallbackConsoleColor();
                 switch (escapeCode)
                 {
                     case 38:
@@ -164,7 +164,7 @@ namespace Pillsgood.Extensions.Logging
             // Example: \x1B[1m
             if (IsDigit(span[i + 2]))
             {
-                var escapeCode = (int) (span[i + 2] - '0');
+                var escapeCode = span[i + 2] - '0';
                 if (startIndex != -1)
                 {
                     _onParseWrite(message, startIndex, length, background, foreground);
