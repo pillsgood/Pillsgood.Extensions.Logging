@@ -5,13 +5,13 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Pillsgood.Extensions.Logging
 {
-    internal class Ansi24BitConsoleLogger : ILogger
+    internal class AnsiConsoleLogger : ILogger
     {
         private readonly string _name;
 
-        private readonly Ansi24BitConsoleLoggerProcessor _queueProcessor;
+        private readonly AnsiConsoleLoggerProcessor _queueProcessor;
 
-        internal Ansi24BitConsoleLogger(string name, Ansi24BitConsoleLoggerProcessor loggerProcessor)
+        internal AnsiConsoleLogger(string name, AnsiConsoleLoggerProcessor loggerProcessor)
         {
             _name = name ?? throw new ArgumentNullException(nameof(name));
             _queueProcessor = loggerProcessor;
@@ -19,7 +19,7 @@ namespace Pillsgood.Extensions.Logging
 
         internal IConsoleFormatter Formatter { get; set; }
         internal IExternalScopeProvider ScopeProvider { get; set; }
-        internal Ansi24BitConsoleLoggerOptions Options { get; set; }
+        internal AnsiConsoleLoggerOptions Options { get; set; }
 
         [ThreadStatic] private static StringWriter _stringWriter;
 

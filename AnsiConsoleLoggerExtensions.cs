@@ -7,40 +7,42 @@ using Microsoft.Extensions.Options;
 
 namespace Pillsgood.Extensions.Logging
 {
-    public static class ConsoleLoggerExtensions
+    public static class AnsiConsoleLoggerExtensions
     {
-        public static ILoggingBuilder AddAnsi24BitConsole(this ILoggingBuilder builder)
+        public static ILoggingBuilder AddAnsiConsole(this ILoggingBuilder builder)
         {
             builder.AddConfiguration();
 
-            builder.AddAnsi24BitConsoleFormatter<DefaultConsoleFormatter, DefaultConsoleFormatterOptions>();
+            builder.AddAnsiConsoleFormatter<DefaultAnsiConsoleFormatter, DefaultAnsiConsoleFormatterOptions>();
             //TODO : more console formatters
 
-            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, Ansi24BitConsoleLoggerProvider>());
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, AnsiConsoleLoggerProvider>());
             LoggerProviderOptions
-                .RegisterProviderOptions<Ansi24BitConsoleLoggerOptions, Ansi24BitConsoleLoggerProvider>(builder.Services);
+                .RegisterProviderOptions<AnsiConsoleLoggerOptions, AnsiConsoleLoggerProvider>(builder.Services);
 
             return builder;
         }
 
-        public static ILoggingBuilder AddAnsi24BitConsole(this ILoggingBuilder builder, Action<Ansi24BitConsoleLoggerOptions> configure)
+        public static ILoggingBuilder AddAnsiConsole(this ILoggingBuilder builder, Action<AnsiConsoleLoggerOptions> configure)
         {
             if (configure == null)
             {
                 throw new ArgumentNullException(nameof(configure));
             }
 
-            builder.AddAnsi24BitConsole();
+            builder.AddAnsiConsole();
             builder.Services.Configure(configure);
             return builder;
         }
 
-        public static ILoggingBuilder AddDefaultAnsi24BitConsole(this ILoggingBuilder builder,
-            Action<DefaultConsoleFormatterOptions> configure) =>
+        public static ILoggingBuilder AddDefaultAnsiConsole(this ILoggingBuilder builder) =>
+            builder.AddFormatterWithName(ConsoleFormatterNames.Default);
+        public static ILoggingBuilder AddDefaultAnsiConsole(this ILoggingBuilder builder,
+            Action<DefaultAnsiConsoleFormatterOptions> configure) =>
             builder.AddAnsi24BitConsoleWithFormatter(ConsoleFormatterNames.Default, configure);
 
         internal static ILoggingBuilder AddAnsi24BitConsoleWithFormatter<TOptions>(this ILoggingBuilder builder, string name,
-            Action<TOptions> configure) where TOptions : ConsoleFormatterOptions
+            Action<TOptions> configure) where TOptions : AnsiConsoleFormatterOptions
         {
             if (configure == null)
             {
@@ -53,10 +55,10 @@ namespace Pillsgood.Extensions.Logging
         }
 
         private static ILoggingBuilder AddFormatterWithName(this ILoggingBuilder builder, string name) =>
-            builder.AddAnsi24BitConsole(options => options.FormatterName = name);
+            builder.AddAnsiConsole(options => options.FormatterName = name);
 
-        public static ILoggingBuilder AddAnsi24BitConsoleFormatter<TFormatter, TOptions>(this ILoggingBuilder builder)
-            where TOptions : ConsoleFormatterOptions
+        public static ILoggingBuilder AddAnsiConsoleFormatter<TFormatter, TOptions>(this ILoggingBuilder builder)
+            where TOptions : AnsiConsoleFormatterOptions
             where TFormatter : class, IConsoleFormatter
         {
             builder.AddConfiguration();
@@ -70,9 +72,9 @@ namespace Pillsgood.Extensions.Logging
             return builder;
         }
 
-        public static ILoggingBuilder AddAnsi24BitConsoleFormatter<TFormatter, TOptions>(this ILoggingBuilder builder,
+        public static ILoggingBuilder AddAnsiConsoleFormatter<TFormatter, TOptions>(this ILoggingBuilder builder,
             Action<TOptions> configure)
-            where TOptions : ConsoleFormatterOptions
+            where TOptions : AnsiConsoleFormatterOptions
             where TFormatter : class, IConsoleFormatter
         {
             if (configure == null)
@@ -80,7 +82,7 @@ namespace Pillsgood.Extensions.Logging
                 throw new ArgumentNullException(nameof(configure));
             }
 
-            builder.AddAnsi24BitConsoleFormatter<TFormatter, TOptions>();
+            builder.AddAnsiConsoleFormatter<TFormatter, TOptions>();
             builder.Services.Configure(configure);
             return builder;
         }
@@ -88,12 +90,12 @@ namespace Pillsgood.Extensions.Logging
 
     internal class
         ConsoleLoggerFormatterConfigureOptions<TFormatter, TOptions> : ConfigureFromConfigurationOptions<TOptions>
-        where TOptions : ConsoleFormatterOptions
+        where TOptions : AnsiConsoleFormatterOptions
         where TFormatter : class, IConsoleFormatter
 
     {
         public ConsoleLoggerFormatterConfigureOptions(
-            ILoggerProviderConfiguration<Ansi24BitConsoleLoggerProvider> providerConfiguration) : base(
+            ILoggerProviderConfiguration<AnsiConsoleLoggerProvider> providerConfiguration) : base(
             providerConfiguration.Configuration.GetSection("FormatterOptions"))
         {
         }
@@ -101,11 +103,11 @@ namespace Pillsgood.Extensions.Logging
 
     internal class
         ConsoleLoggerFormatterOptionsChangeTokenSource<TFormatter, TOptions> : ConfigurationChangeTokenSource<TOptions>
-        where TOptions : ConsoleFormatterOptions
+        where TOptions : AnsiConsoleFormatterOptions
         where TFormatter : class, IConsoleFormatter
     {
         public ConsoleLoggerFormatterOptionsChangeTokenSource(
-            ILoggerProviderConfiguration<Ansi24BitConsoleLoggerProvider> providerConfiguration)
+            ILoggerProviderConfiguration<AnsiConsoleLoggerProvider> providerConfiguration)
             : base(providerConfiguration.Configuration.GetSection("FormatterOptions"))
         {
         }

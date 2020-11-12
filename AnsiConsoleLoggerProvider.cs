@@ -9,32 +9,32 @@ using Microsoft.Extensions.Options;
 
 namespace Pillsgood.Extensions.Logging
 {
-    [ProviderAlias("Console")]
-    internal class Ansi24BitConsoleLoggerProvider : ILoggerProvider, ISupportExternalScope
+    [ProviderAlias("AnsiConsole")]
+    internal class AnsiConsoleLoggerProvider : ILoggerProvider, ISupportExternalScope
     {
-        private readonly IOptionsMonitor<Ansi24BitConsoleLoggerOptions> _options;
-        private readonly ConcurrentDictionary<string, Ansi24BitConsoleLogger> _loggers;
+        private readonly IOptionsMonitor<AnsiConsoleLoggerOptions> _options;
+        private readonly ConcurrentDictionary<string, AnsiConsoleLogger> _loggers;
         private ConcurrentDictionary<string, IConsoleFormatter> _formatters;
-        private readonly Ansi24BitConsoleLoggerProcessor _messageQueue;
+        private readonly AnsiConsoleLoggerProcessor _messageQueue;
 
         private IDisposable _optionsReloadToken;
         private IExternalScopeProvider _scopeProvider = NullExternalScopeProvider.Instance;
 
-        public Ansi24BitConsoleLoggerProvider(IOptionsMonitor<Ansi24BitConsoleLoggerOptions> options) : this(options,
+        public AnsiConsoleLoggerProvider(IOptionsMonitor<AnsiConsoleLoggerOptions> options) : this(options,
             Enumerable.Empty<IConsoleFormatter>())
         {
         }
 
 
-        public Ansi24BitConsoleLoggerProvider(IOptionsMonitor<Ansi24BitConsoleLoggerOptions> options,
+        public AnsiConsoleLoggerProvider(IOptionsMonitor<AnsiConsoleLoggerOptions> options,
             IEnumerable<IConsoleFormatter> formatters)
         {
             _options = options;
-            _loggers = new ConcurrentDictionary<string, Ansi24BitConsoleLogger>();
+            _loggers = new ConcurrentDictionary<string, AnsiConsoleLogger>();
             SetFormatters(formatters);
             ReloadLoggerOptions(options.CurrentValue);
             _optionsReloadToken = _options.OnChange(ReloadLoggerOptions);
-            _messageQueue = new Ansi24BitConsoleLoggerProcessor();
+            _messageQueue = new AnsiConsoleLoggerProcessor();
             if (!Is4BitColorMode() && DoesConsoleSupportAnsi())
             {
                 _messageQueue.Console = new AnsiLogConsole();
@@ -42,10 +42,19 @@ namespace Pillsgood.Extensions.Logging
             }
             else
             {
-                Console.WriteLine("ONLY 4 BIT");
                 _messageQueue.Console = new AnsiParsingLogConsole();
                 _messageQueue.ErrorConsole = new AnsiParsingLogConsole(true);
+                Warn4Bit();
             }
+        }
+
+        private void Warn4Bit()
+        {
+            var name = GetType().FullName;
+            var logger = CreateLogger(name);
+            logger.LogWarning("Console does not support 24 bit color, fallback to 4 bit");
+            _loggers.Remove(name, out _);
+            _formatters.Remove(name, out _);
         }
 
         private bool DoesConsoleSupportAnsi()
@@ -101,9 +110,9 @@ namespace Pillsgood.Extensions.Logging
             if (formatters?.Any() != true)
             {
                 var defaultMonitor =
-                    new FormatterOptionsMonitor<DefaultConsoleFormatterOptions>(new DefaultConsoleFormatterOptions());
+                    new FormatterOptionsMonitor<DefaultAnsiConsoleFormatterOptions>(new DefaultAnsiConsoleFormatterOptions());
                 _formatters.GetOrAdd(ConsoleFormatterNames.Default,
-                    formatterName => new DefaultConsoleFormatter(defaultMonitor));
+                    formatterName => new DefaultAnsiConsoleFormatter(defaultMonitor));
                 // TODO: More Default formatters
             }
             else
@@ -115,7 +124,7 @@ namespace Pillsgood.Extensions.Logging
             }
         }
 
-        private void ReloadLoggerOptions(Ansi24BitConsoleLoggerOptions options)
+        private void ReloadLoggerOptions(AnsiConsoleLoggerOptions options)
         {
             if (options.FormatterName == null || !_formatters.TryGetValue(options.FormatterName, out var logFormatter))
             {
@@ -138,7 +147,7 @@ namespace Pillsgood.Extensions.Logging
                 throw new ArgumentNullException(nameof(_options.CurrentValue.FormatterName));
             }
 
-            return _loggers.GetOrAdd(name, loggerName => new Ansi24BitConsoleLogger(name, _messageQueue)
+            return _loggers.GetOrAdd(name, loggerName => new AnsiConsoleLogger(name, _messageQueue)
             {
                 Options = _options.CurrentValue,
                 ScopeProvider = _scopeProvider,

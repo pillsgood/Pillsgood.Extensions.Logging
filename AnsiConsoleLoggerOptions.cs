@@ -2,7 +2,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Pillsgood.Extensions.Logging
 {
-    public class Ansi24BitConsoleLoggerOptions
+    public class AnsiConsoleLoggerOptions
     {
         public string FormatterName { get; set; } = ConsoleFormatterNames.Default;
         public LogLevel LogToStandardErrorThreshold { get; set; } = LogLevel.None;

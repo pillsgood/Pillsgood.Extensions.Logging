@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System;
 using System.Drawing;
 using Microsoft.Extensions.Logging;
 
@@ -6,96 +6,68 @@ namespace Pillsgood.Extensions.Logging
 {
     public class LogLevelOptions
     {
-        public LogLevelOption Trace
+        public LogLevelOption Trace { get; set; } = new LogLevelOption()
         {
-            get => Map[LogLevel.Trace];
-            set => Map[LogLevel.Trace] = value;
-        }
+            Name = "trce",
+            Foreground = Color.Gray
+        };
 
-        public LogLevelOption Debug
+        public LogLevelOption Debug { get; set; } = new LogLevelOption()
         {
-            get => Map[LogLevel.Debug];
-            set => Map[LogLevel.Debug] = value;
-        }
+            Name = "dbug",
+            Foreground = Color.Magenta
+        };
 
-        public LogLevelOption Information
+        public LogLevelOption Information { get; set; } = new LogLevelOption()
         {
-            get => Map[LogLevel.Information];
-            set => Map[LogLevel.Information] = value;
-        }
+            Name = "info",
+            Foreground = Color.Lime
+        };
 
-        public LogLevelOption Warning
+        public LogLevelOption Warning { get; set; } = new LogLevelOption()
         {
-            get => Map[LogLevel.Warning];
-            set => Map[LogLevel.Warning] = value;
-        }
+            Name = "warn",
+            Foreground = Color.Orange
+        };
 
-        public LogLevelOption Error
+        public LogLevelOption Error { get; set; } = new LogLevelOption()
         {
-            get => Map[LogLevel.Error];
-            set => Map[LogLevel.Error] = value;
-        }
+            Name = "fail",
+            Foreground = Color.Red,
+        };
 
-        public LogLevelOption Critical
+        public LogLevelOption Critical { get; set; } = new LogLevelOption()
         {
-            get => Map[LogLevel.Critical];
-            set => Map[LogLevel.Critical] = value;
-        }
+            Name = "crit",
+            Foreground = Color.White,
+            Background = Color.Red
+        };
 
-        internal readonly Dictionary<LogLevel, LogLevelOption> Map =
-            new Dictionary<LogLevel, LogLevelOption>
+        public void Configure(LogLevel logLevel, Action<LogLevelOption> configure)
+        {
+            if (TryGetLevelOption(logLevel, out var option))
             {
-                {
-                    LogLevel.Trace, new LogLevelOption
-                    {
-                        Name = "trce",
-                        Foreground = Color.Gray
-                    }
-                },
-                {
-                    LogLevel.Debug, new LogLevelOption
-                    {
-                        Name = "dbug",
-                        Foreground = Color.Magenta
-                    }
-                },
-                {
-                    LogLevel.Information, new LogLevelOption
-                    {
-                        Name = "info",
-                        Foreground = Color.Lime
-                    }
-                },
-                {
-                    LogLevel.Warning, new LogLevelOption
-                    {
-                        Name = "warn",
-                        Foreground = Color.Orange
-                    }
-                },
-                {
-                    LogLevel.Error, new LogLevelOption
-                    {
-                        Name = "fail",
-                        Foreground = Color.Red,
-                    }
-                },
-                {
-                    LogLevel.Critical, new LogLevelOption
-                    {
-                        Name = "crit",
-                        Foreground = Color.White,
-                        Background = Color.Red
-                    }
-                }
+                configure(option);
+            }
+        }
+
+        public bool TryGetLevelOption(LogLevel logLevel, out LogLevelOption option)
+        {
+            option = logLevel switch
+            {
+                LogLevel.Trace => Trace,
+                LogLevel.Debug => Debug,
+                LogLevel.Information => Information,
+                LogLevel.Warning => Warning,
+                LogLevel.Error => Error,
+                LogLevel.Critical => Critical,
+                _ => null
             };
+            return option != null;
+        }
 
         public class LogLevelOption
         {
-            internal LogLevelOption()
-            {
-            }
-
             public string Name { get; set; }
             public Color? Foreground { get; set; }
             public Color? Background { get; set; }

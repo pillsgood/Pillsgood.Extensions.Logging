@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace Pillsgood.Extensions.Logging
 {
-    public class DefaultConsoleFormatter : IConsoleFormatter, IDisposable
+    public class DefaultAnsiConsoleFormatter : IConsoleFormatter, IDisposable
     {
         private const string LogLevelPadding = ": ";
 
@@ -16,9 +16,9 @@ namespace Pillsgood.Extensions.Logging
 
         private IDisposable _optionsReloadToken;
 
-        internal DefaultConsoleFormatterOptions FormatterOptions { get; set; }
+        internal DefaultAnsiConsoleFormatterOptions FormatterOptions { get; set; }
 
-        public DefaultConsoleFormatter(IOptionsMonitor<DefaultConsoleFormatterOptions> options)
+        public DefaultAnsiConsoleFormatter(IOptionsMonitor<DefaultAnsiConsoleFormatterOptions> options)
         {
             ReloadLoggerOptions(options.CurrentValue);
             _optionsReloadToken = options.OnChange(ReloadLoggerOptions);
@@ -26,7 +26,7 @@ namespace Pillsgood.Extensions.Logging
             _newLineWithMessagePadding = Environment.NewLine + _messagePadding;
         }
 
-        private void ReloadLoggerOptions(DefaultConsoleFormatterOptions options)
+        private void ReloadLoggerOptions(DefaultAnsiConsoleFormatterOptions options)
         {
             FormatterOptions = options;
         }
@@ -131,7 +131,7 @@ namespace Pillsgood.Extensions.Logging
 
         private string GetLogLevelString(LogLevel logLevel)
         {
-            if (FormatterOptions.LogLevelOptions.Map.TryGetValue(logLevel, out var option))
+            if (FormatterOptions.LogLevelOptions.TryGetLevelOption(logLevel, out var option))
             {
                 return option.Name;
             }
@@ -149,7 +149,7 @@ namespace Pillsgood.Extensions.Logging
                 return new ConsoleColors();
             }
 
-            return FormatterOptions.LogLevelOptions.Map.TryGetValue(logLevel, out var option)
+            return FormatterOptions.LogLevelOptions.TryGetLevelOption(logLevel, out var option)
                 ? new ConsoleColors(option.Foreground, option.Background)
                 : new ConsoleColors();
         }

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 namespace Pillsgood.Extensions.Logging
 {
     internal class FormatterOptionsMonitor<TOptions> : IOptionsMonitor<TOptions>
-        where TOptions : ConsoleFormatterOptions
+        where TOptions : AnsiConsoleFormatterOptions
     {
         private TOptions _options;
 
