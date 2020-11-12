@@ -55,11 +55,11 @@ namespace Pillsgood.Extensions.Logging
             }
         }
 
-        private bool ParseAnsiCode(string message, ReadOnlySpan<char> span, char EscapeChar, ref int i,
+        private bool ParseAnsiCode(string message, ReadOnlySpan<char> span, char escapeChar, ref int i,
             ref int startIndex,
             ref int length, ref ConsoleColor? background, ref ConsoleColor? foreground, ref bool isBright)
         {
-            if (span[i] == EscapeChar && span.Length >= i + 4 && span[i + 1] == '[')
+            if (span[i] == escapeChar && span.Length >= i + 4 && span[i + 1] == '[')
             {
                 if (span[i + 5] == '2' && span[i + 18] == 'm')
                 {
@@ -88,9 +88,7 @@ namespace Pillsgood.Extensions.Logging
             // Example: \x1B[48;2;000;000;000m
             if (IsDigit(span[i + 2]) && IsDigit(span[i + 3]))
             {
-                int escapeCode;
-                ConsoleColor? color;
-                escapeCode = (span[i + 2] - '0') * 10 + (span[i + 3] - '0');
+                var escapeCode = (span[i + 2] - '0') * 10 + (span[i + 3] - '0');
                 if (startIndex != -1)
                 {
                     _onParseWrite(message, startIndex, length, background, foreground);
@@ -101,7 +99,7 @@ namespace Pillsgood.Extensions.Logging
                 var r = int.Parse(span[(i + 7)..(i + 10)]);
                 var g = int.Parse(span[(i + 11)..(i + 14)]);
                 var b = int.Parse(span[(i + 15)..(i + 18)]);
-                color = Color.FromArgb(r, g, b).GetFallbackConsoleColor();
+                var color = Color.FromArgb(r, g, b).GetFallbackConsoleColor();
                 switch (escapeCode)
                 {
                     case 38:
@@ -136,9 +134,8 @@ namespace Pillsgood.Extensions.Logging
                     length = 0;
                 }
 
-                ConsoleColor? color;
                 if (escapeCode >= 30 && escapeCode < 40 &&
-                    TryGetColor(escapeCode % 10, isBright, out color))
+                    TryGetColor(escapeCode % 10, isBright, out var color))
                 {
                     foreground = color;
                     isBright = false;

@@ -6,7 +6,7 @@ using System.Text;
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 public partial class Interop
 {
-    private class Libaries
+    private class Libraries
     {
         internal const string Kernel32 = "kernel32.dll";
         internal const string NtDll = "ntdll.dll";
@@ -24,14 +24,14 @@ public partial class Interop
             internal IntPtr InheritedFromUniqueProcessId;
         }
 
-        [DllImport(Libaries.NtDll)]
+        [DllImport(Libraries.NtDll)]
         internal static extern int NtQueryInformationProcess(IntPtr processHandle, int processInformationClass,
             ref PROCESS_BASIC_INFORMATION processInformation, int processInformationLength, out int returnLength);
     }
 
     internal class Kernel32
     {
-        [DllImport(Libaries.Kernel32, SetLastError = true)]
+        [DllImport(Libraries.Kernel32, SetLastError = true)]
         internal static extern bool GetConsoleMode(IntPtr handle, out uint mode);
 
         internal static bool IsGetConsoleModeCallSuccessful(IntPtr handle)
@@ -40,10 +40,10 @@ public partial class Interop
             return GetConsoleMode(handle, out mode);
         }
 
-        [DllImport(Libaries.Kernel32, SetLastError = true)]
+        [DllImport(Libraries.Kernel32, SetLastError = true)]
         internal static extern bool SetConsoleMode(IntPtr handle, uint mode);
 
-        [DllImport(Libaries.Kernel32, SetLastError = true)]
+        [DllImport(Libraries.Kernel32, SetLastError = true)]
         internal static extern IntPtr GetStdHandle(int nStdHandle);
 
         internal const uint ENABLE_PROCESSED_INPUT = 0x0001;

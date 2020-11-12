@@ -10,7 +10,7 @@ namespace Pillsgood.Extensions.Logging
 
         public AnsiParsingLogConsole(bool stdErr = false)
         {
-            _textWriter = stdErr ? System.Console.Error : System.Console.Out;
+            _textWriter = stdErr ? Console.Error : Console.Out;
             _parser = new AnsiParser(WriteToConsole);
         }
 
