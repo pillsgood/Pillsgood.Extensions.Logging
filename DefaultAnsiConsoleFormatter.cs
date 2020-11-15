@@ -75,12 +75,17 @@ namespace Pillsgood.Extensions.Logging
         {
             var singleLine = FormatterOptions.Singleline;
             var eventId = logEntry.EventId.Id;
+            var eventName = logEntry.EventId.Name;
             var exception = logEntry.Exception;
 
             textWriter.Write(AnsiString.Build(s => s
                 .Append(LogLevelPadding)
                 .Append(logEntry.Category).Color(FormatterOptions.CategoryColor)
-                .Append('[').Append(eventId).Append(']'))
+                .Append('[')
+                .Append("eventId").Append(!string.IsNullOrEmpty(eventName) && FormatterOptions.WriteEventName
+                    ? $" / {eventName}"
+                    : string.Empty)
+                .Append(']'))
             );
 
             if (!singleLine)

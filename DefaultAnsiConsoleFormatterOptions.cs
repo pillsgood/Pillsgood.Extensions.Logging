@@ -6,5 +6,6 @@ namespace Pillsgood.Extensions.Logging
     {
         public LoggerColorBehavior ColorBehavior { get; set; }
         public bool Singleline { get; set; }
+        public bool WriteEventName { get; set; }
     }
 }
