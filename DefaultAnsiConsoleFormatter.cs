@@ -126,7 +126,7 @@ namespace Pillsgood.Extensions.Logging
             static void WriteReplacing(TextWriter writer, string oldValue, string newValue, string message)
             {
                 var newMessage = message.Replace(oldValue, newValue);
-                writer.Write(message);
+                writer.Write(newMessage);
             }
         }
 
