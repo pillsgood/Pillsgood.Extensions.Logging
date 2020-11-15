@@ -82,7 +82,7 @@ namespace Pillsgood.Extensions.Logging
                 .Append(LogLevelPadding)
                 .Append(logEntry.Category).Color(FormatterOptions.CategoryColor)
                 .Append('[')
-                .Append("eventId").Append(!string.IsNullOrEmpty(eventName) && FormatterOptions.WriteEventName
+                .Append(eventId).Append(!string.IsNullOrEmpty(eventName) && FormatterOptions.WriteEventName
                     ? $" / {eventName}"
                     : string.Empty)
                 .Append(']'))
