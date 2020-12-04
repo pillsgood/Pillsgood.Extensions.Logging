@@ -37,7 +37,7 @@ namespace Pillsgood.Extensions.Logging
             return builder;
         }
 
-        public static ILoggingBuilder AddAnsiConsoleWrite(this ILoggingBuilder builder)
+        public static ILoggingBuilder AddAnsiConsoleWriter(this ILoggingBuilder builder)
         {
             builder.AddAnsiConsole(options => options.AddConsoleWriter = true);
             builder.Services.AddSingleton(provider =>
