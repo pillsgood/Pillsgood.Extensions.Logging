@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Buffers;
 using System.IO;
@@ -9,7 +10,7 @@ namespace Pillsgood.Extensions.Logging
     internal class AnsiConsoleWriter : IConsoleWriter
     {
         private readonly AnsiConsoleLoggerProcessor _queueProcessor;
-        [ThreadStatic] private static StringWriter _stringWriter;
+        [ThreadStatic] private static StringWriter? _stringWriter;
 
         public AnsiConsoleWriter(AnsiConsoleLoggerProcessor queueProcessor)
         {
