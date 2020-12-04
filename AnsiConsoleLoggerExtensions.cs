@@ -16,14 +16,16 @@ namespace Pillsgood.Extensions.Logging
             builder.AddAnsiConsoleFormatter<DefaultAnsiConsoleFormatter, DefaultAnsiConsoleFormatterOptions>();
             //TODO : more console formatters
 
-            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, AnsiConsoleLoggerProvider>());
+            builder.Services.TryAddEnumerable(ServiceDescriptor
+                .Singleton<ILoggerProvider, AnsiConsoleLoggerProvider>());
             LoggerProviderOptions
                 .RegisterProviderOptions<AnsiConsoleLoggerOptions, AnsiConsoleLoggerProvider>(builder.Services);
 
             return builder;
         }
 
-        public static ILoggingBuilder AddAnsiConsole(this ILoggingBuilder builder, Action<AnsiConsoleLoggerOptions> configure)
+        public static ILoggingBuilder AddAnsiConsole(this ILoggingBuilder builder,
+            Action<AnsiConsoleLoggerOptions> configure)
         {
             if (configure == null)
             {
@@ -35,13 +37,23 @@ namespace Pillsgood.Extensions.Logging
             return builder;
         }
 
+        public static ILoggingBuilder AddAnsiConsoleWrite(this ILoggingBuilder builder)
+        {
+            builder.AddAnsiConsole(options => options.AddConsoleWriter = true);
+            builder.Services.AddSingleton(provider =>
+                provider.GetRequiredService<AnsiConsoleLoggerProvider>().consoleWriter);
+            return builder;
+        }
+
         public static ILoggingBuilder AddDefaultAnsiConsole(this ILoggingBuilder builder) =>
             builder.AddFormatterWithName(ConsoleFormatterNames.Default);
+
         public static ILoggingBuilder AddDefaultAnsiConsole(this ILoggingBuilder builder,
             Action<DefaultAnsiConsoleFormatterOptions> configure) =>
             builder.AddAnsi24BitConsoleWithFormatter(ConsoleFormatterNames.Default, configure);
 
-        internal static ILoggingBuilder AddAnsi24BitConsoleWithFormatter<TOptions>(this ILoggingBuilder builder, string name,
+        internal static ILoggingBuilder AddAnsi24BitConsoleWithFormatter<TOptions>(this ILoggingBuilder builder,
+            string name,
             Action<TOptions> configure) where TOptions : AnsiConsoleFormatterOptions
         {
             if (configure == null)

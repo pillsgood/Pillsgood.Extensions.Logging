@@ -16,6 +16,7 @@ namespace Pillsgood.Extensions.Logging
         private readonly ConcurrentDictionary<string, AnsiConsoleLogger> _loggers;
         private ConcurrentDictionary<string, IConsoleFormatter> _formatters;
         private readonly AnsiConsoleLoggerProcessor _messageQueue;
+        internal readonly IConsoleWriter consoleWriter;
 
         private IDisposable _optionsReloadToken;
         private IExternalScopeProvider _scopeProvider = NullExternalScopeProvider.Instance;
@@ -45,6 +46,11 @@ namespace Pillsgood.Extensions.Logging
                 _messageQueue.Console = new AnsiParsingLogConsole();
                 _messageQueue.ErrorConsole = new AnsiParsingLogConsole(true);
                 Warn4Bit();
+            }
+
+            if (options.CurrentValue.AddConsoleWriter)
+            {
+                consoleWriter = new AnsiConsoleWriter(_messageQueue);
             }
         }
 
@@ -110,7 +116,8 @@ namespace Pillsgood.Extensions.Logging
             if (formatters?.Any() != true)
             {
                 var defaultMonitor =
-                    new FormatterOptionsMonitor<DefaultAnsiConsoleFormatterOptions>(new DefaultAnsiConsoleFormatterOptions());
+                    new FormatterOptionsMonitor<DefaultAnsiConsoleFormatterOptions>(
+                        new DefaultAnsiConsoleFormatterOptions());
                 _formatters.GetOrAdd(ConsoleFormatterNames.Default,
                     formatterName => new DefaultAnsiConsoleFormatter(defaultMonitor));
                 // TODO: More Default formatters
