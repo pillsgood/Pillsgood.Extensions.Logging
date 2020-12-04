@@ -16,8 +16,10 @@ namespace Pillsgood.Extensions.Logging
             builder.AddAnsiConsoleFormatter<DefaultAnsiConsoleFormatter, DefaultAnsiConsoleFormatterOptions>();
             //TODO : more console formatters
 
+            builder.Services.TryAddSingleton<AnsiConsoleLoggerProvider>();
             builder.Services.TryAddEnumerable(ServiceDescriptor
-                .Singleton<ILoggerProvider, AnsiConsoleLoggerProvider>());
+                .Singleton<ILoggerProvider, AnsiConsoleLoggerProvider>(provider =>
+                    provider.GetRequiredService<AnsiConsoleLoggerProvider>()));
             LoggerProviderOptions
                 .RegisterProviderOptions<AnsiConsoleLoggerOptions, AnsiConsoleLoggerProvider>(builder.Services);
 

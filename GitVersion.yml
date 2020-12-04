@@ -1,5 +1,7 @@
-next-version: 0.7
+assembly-file-versioning-scheme: MajorMinorPatchTag
 branches: {}
 ignore:
   sha: []
 merge-message-formats: {}
+patch-version-bump-message: '\+semver:\s?(fix|patch)'
+assembly-file-versioning-format: '{Major}.{Minor}.{CommitsSinceVersionSource}'
