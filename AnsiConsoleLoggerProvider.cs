@@ -97,10 +97,17 @@ namespace Pillsgood.Extensions.Logging
             var process = Process.GetCurrentProcess();
             while (process != null)
             {
-                if (_options.CurrentValue.UnsupportedProcesses.Contains(process.ProcessName,
-                    StringComparer.OrdinalIgnoreCase))
+                try
                 {
-                    return true;
+                    if (_options.CurrentValue.UnsupportedProcesses.Contains(process.ProcessName,
+                        StringComparer.OrdinalIgnoreCase))
+                    {
+                        return true;
+                    }
+                }
+                catch (InvalidOperationException)
+                {
+                    break;
                 }
 
                 process = process.Parent();

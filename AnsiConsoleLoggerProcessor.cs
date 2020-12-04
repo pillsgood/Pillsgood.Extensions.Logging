@@ -42,7 +42,7 @@ namespace Pillsgood.Extensions.Logging
             {
                 WriteMessage(message);
             }
-            catch
+            catch (Exception)
             {
                 // ignored
             }

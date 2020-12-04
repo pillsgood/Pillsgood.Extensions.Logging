@@ -1,22 +1,22 @@
-#nullable enable
 using System;
 using System.Buffers;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Pillsgood.Extensions.Logging
 {
     internal class AnsiConsoleWriter : IConsoleWriter
     {
         private readonly AnsiConsoleLoggerProcessor _queueProcessor;
-        [ThreadStatic] private static StringWriter? _stringWriter;
+        [ThreadStatic] private static StringWriter _stringWriter;
 
         public AnsiConsoleWriter(AnsiConsoleLoggerProcessor queueProcessor)
         {
             _queueProcessor = queueProcessor;
         }
 
-        private void WriteToStream(Action<TextWriter> handle)
+        private async void WriteToStream(Action<TextWriter> handle)
         {
             _stringWriter ??= new StringWriter();
             handle.Invoke(_stringWriter);
@@ -30,6 +30,7 @@ namespace Pillsgood.Extensions.Logging
             }
 
             _queueProcessor.EnqueueMessage(new LogMessageEntry(computedAnsiString));
+            await Task.Delay(5);
         }
 
         public void WriteLine()

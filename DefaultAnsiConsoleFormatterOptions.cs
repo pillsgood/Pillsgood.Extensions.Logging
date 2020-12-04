@@ -1,5 +1,3 @@
-using System;
-
 namespace Pillsgood.Extensions.Logging
 {
     public class DefaultAnsiConsoleFormatterOptions : AnsiConsoleFormatterOptions

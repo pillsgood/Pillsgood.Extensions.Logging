@@ -16,7 +16,7 @@ namespace Pillsgood.Extensions.Logging
 
         private static string GetBackgroundColorEscapeCode(Color color) =>
             $"\x1B[48;2;{color.R:000};{color.G:000};{color.B:000}m";
-        
+
         private static string GetForegroundColorEscapeCode(ConsoleColor color)
         {
             return color switch
@@ -37,10 +37,10 @@ namespace Pillsgood.Extensions.Logging
                 ConsoleColor.Magenta => "\x1B[1m\x1B[35m",
                 ConsoleColor.Cyan => "\x1B[1m\x1B[36m",
                 ConsoleColor.White => "\x1B[1m\x1B[37m",
-                _ => DefaultForegroundColor 
+                _ => DefaultForegroundColor
             };
         }
-        
+
         private static string GetBackgroundColorEscapeCode(ConsoleColor color)
         {
             return color switch
@@ -61,14 +61,13 @@ namespace Pillsgood.Extensions.Logging
                 ConsoleColor.Magenta => "\x1B[1m\x1B[45m",
                 ConsoleColor.Cyan => "\x1B[1m\x1B[46m",
                 ConsoleColor.White => "\x1B[1m\x1B[47m",
-                _ => DefaultBackgroundColor 
+                _ => DefaultBackgroundColor
             };
         }
 
 
         public static void WriteColoredMessage(this StringBuilder stringBuilder, Action<StringBuilder> invoker,
-            Color? foreground,
-            Color? background)
+            Color? foreground, Color? background)
         {
             if (background.HasValue) stringBuilder.Append(GetBackgroundColorEscapeCode(background.Value));
 
@@ -76,14 +75,23 @@ namespace Pillsgood.Extensions.Logging
 
             invoker.Invoke(stringBuilder);
 
-            if (foreground.HasValue) stringBuilder.Append(DefaultForegroundColor);
+            if (foreground.HasValue)
+            {
+                stringBuilder.Replace(DefaultForegroundColor, GetForegroundColorEscapeCode(foreground.Value));
+                stringBuilder.Append(DefaultForegroundColor);
+            }
 
-            if (background.HasValue) stringBuilder.Append(DefaultBackgroundColor);
+            if (background.HasValue)
+            {
+                stringBuilder.Replace(DefaultBackgroundColor, GetBackgroundColorEscapeCode(background.Value));
+                stringBuilder.Append(DefaultBackgroundColor);
+            }
         }
         
+
+
         public static void WriteColoredMessage(this StringBuilder stringBuilder, Action<StringBuilder> invoker,
-            ConsoleColor? foreground,
-            ConsoleColor? background)
+            ConsoleColor? foreground, ConsoleColor? background)
         {
             if (background.HasValue) stringBuilder.Append(GetBackgroundColorEscapeCode(background.Value));
 
@@ -91,10 +99,20 @@ namespace Pillsgood.Extensions.Logging
 
             invoker.Invoke(stringBuilder);
 
-            if (foreground.HasValue) stringBuilder.Append(DefaultForegroundColor);
+            if (foreground.HasValue)
+            {
+                stringBuilder.Replace(DefaultForegroundColor, GetForegroundColorEscapeCode(foreground.Value));
+                stringBuilder.Append(DefaultForegroundColor);
+            }
 
-            if (background.HasValue) stringBuilder.Append(DefaultBackgroundColor);
+            if (background.HasValue)
+            {
+                stringBuilder.Replace(DefaultBackgroundColor, GetBackgroundColorEscapeCode(background.Value));
+                stringBuilder.Append(DefaultBackgroundColor);
+            }
+
         }
+        
 
         public static void WriteColoredMessage(this TextWriter textWriter, string message,
             Color? foreground = null,
