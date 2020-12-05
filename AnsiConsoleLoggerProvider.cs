@@ -38,13 +38,13 @@ namespace Pillsgood.Extensions.Logging
             _messageQueue = new AnsiConsoleLoggerProcessor();
             if (!Is4BitColorMode() && DoesConsoleSupportAnsi())
             {
-                _messageQueue.Console = new AnsiLogConsole();
-                _messageQueue.ErrorConsole = new AnsiLogConsole(true);
+                _messageQueue.console = new AnsiLogConsole();
+                _messageQueue.errorConsole = new AnsiLogConsole(true);
             }
             else
             {
-                _messageQueue.Console = new AnsiParsingLogConsole();
-                _messageQueue.ErrorConsole = new AnsiParsingLogConsole(true);
+                _messageQueue.console = new AnsiParsingLogConsole();
+                _messageQueue.errorConsole = new AnsiParsingLogConsole(true);
                 Warn4Bit();
             }
 

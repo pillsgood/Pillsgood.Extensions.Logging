@@ -17,7 +17,7 @@ namespace Pillsgood.Extensions.Logging
             _queueProcessor = queueProcessor;
         }
 
-        private async void WriteToStream(Action<TextWriter> handle)
+        private void WriteToStream(Action<TextWriter> handle)
         {
             _stringWriter ??= new StringWriter();
             handle.Invoke(_stringWriter);
@@ -31,7 +31,6 @@ namespace Pillsgood.Extensions.Logging
             }
 
             _queueProcessor.EnqueueMessage(new LogMessageEntry(computedAnsiString));
-            await Task.Delay(5);
         }
 
         public void WriteLine()
