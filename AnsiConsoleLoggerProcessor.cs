@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Pillsgood.Extensions.Logging
 {
@@ -22,7 +20,7 @@ namespace Pillsgood.Extensions.Logging
         {
             _outputThread = new Thread(ProcessLogQueue)
             {
-                IsBackground = false,
+                IsBackground = true,
                 Name = "Console logger queue processing thread"
             };
 
@@ -75,6 +73,7 @@ namespace Pillsgood.Extensions.Logging
                 foreach (var message in _messageQueue.GetConsumingEnumerable())
                 {
                     WriteMessage(message);
+                    _outputThread.IsBackground = false;
                     _timer.Change(TimeoutDuration, 0);
                 }
             }
