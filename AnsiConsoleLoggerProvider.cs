@@ -35,7 +35,7 @@ namespace Pillsgood.Extensions.Logging
             SetFormatters(formatters);
             ReloadLoggerOptions(options.CurrentValue);
             _optionsReloadToken = _options.OnChange(ReloadLoggerOptions);
-            _messageQueue = new AnsiConsoleLoggerProcessor();
+            _messageQueue = new AnsiConsoleLoggerProcessor(_options.CurrentValue.TimeoutDuration);
             if (!Is4BitColorMode() && DoesConsoleSupportAnsi())
             {
                 _messageQueue.console = new AnsiLogConsole();

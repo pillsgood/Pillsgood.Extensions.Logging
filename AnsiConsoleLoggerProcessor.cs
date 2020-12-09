@@ -14,10 +14,11 @@ namespace Pillsgood.Extensions.Logging
         public IConsole console;
         public IConsole errorConsole;
         private readonly Timer _timer;
-        private const int TimeoutDuration = 500;
+        private readonly int _timeoutDuration;
 
-        public AnsiConsoleLoggerProcessor()
+        public AnsiConsoleLoggerProcessor(int timeoutDuration = 0)
         {
+            _timeoutDuration = timeoutDuration;
             _outputThread = new Thread(ProcessLogQueue)
             {
                 IsBackground = true,
@@ -25,7 +26,11 @@ namespace Pillsgood.Extensions.Logging
             };
 
 
-            _timer = new Timer(Timeout, null, TimeoutDuration, 0);
+            if (_timeoutDuration != 0)
+            {
+                _timer = new Timer(Timeout, null, _timeoutDuration, 0);
+            }
+
             _outputThread.Start();
         }
 
@@ -74,7 +79,10 @@ namespace Pillsgood.Extensions.Logging
                 {
                     WriteMessage(message);
                     _outputThread.IsBackground = false;
-                    _timer.Change(TimeoutDuration, 0);
+                    if (_timeoutDuration != 0)
+                    {
+                        _timer.Change(_timeoutDuration, 0);
+                    }
                 }
             }
             catch
