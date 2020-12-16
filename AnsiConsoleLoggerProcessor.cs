@@ -78,11 +78,9 @@ namespace Pillsgood.Extensions.Logging
                 foreach (var message in _messageQueue.GetConsumingEnumerable())
                 {
                     WriteMessage(message);
+                    if (_timeoutDuration == 0) continue;
                     _outputThread.IsBackground = false;
-                    if (_timeoutDuration != 0)
-                    {
-                        _timer.Change(_timeoutDuration, 0);
-                    }
+                    _timer.Change(_timeoutDuration, 0);
                 }
             }
             catch
