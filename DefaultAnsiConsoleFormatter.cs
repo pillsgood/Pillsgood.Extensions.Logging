@@ -57,7 +57,7 @@ namespace Pillsgood.Extensions.Logging
                 timestamp = dateTimeOffset.ToString(timestampFormat);
             }
 
-            if (timestamp == null)
+            if (timestamp != null)
             {
                 textWriter.Write(timestamp);
             }
